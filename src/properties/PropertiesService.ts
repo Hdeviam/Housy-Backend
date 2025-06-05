@@ -85,4 +85,18 @@ export class PropertiesService {
 
     this.properties.splice(index, 1);
   }
+
+  /**
+   * Busca propiedades por título o ubicación que coincidan con el término de búsqueda.
+   * @param query - Término de búsqueda
+   * @returns Array de propiedades coincidentes
+   */
+  search(query: string): Property[] {
+    const searchTerm = query.toLowerCase();
+    return this.properties.filter(
+      (property) =>
+        property.title.toLowerCase().includes(searchTerm) ||
+        property.location.toLowerCase().includes(searchTerm),
+    );
+  }
 }
