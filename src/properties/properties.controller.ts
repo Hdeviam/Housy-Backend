@@ -120,10 +120,7 @@ export class PropertiesController {
     description: 'Propiedad no encontrada',
   })
   @Put(':id')
-  update(
-    @Param('id') id: number,
-    @Body() updatePropertyDto: UpdatePropertyDto,
-  ): Property {
+  update(@Param('id') id: number, @Body() updatePropertyDto: UpdatePropertyDto): Property {
     return this.propertiesService.update(+id, updatePropertyDto);
   }
 

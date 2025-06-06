@@ -1,17 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { UsersService } from './users.service';
 
-@ApiTags('Users') // Agrupa los endpoints bajo "Users"
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -20,10 +12,9 @@ export class UsersController {
    * Devuelve una lista de todos los usuarios registrados.
    * @returns Array de objetos `User`
    */
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @Get()
-  getAll(): User[] {
-    return this.usersService.findAll();
+  async getAll(): Promise<User[]> {
+    return await this.usersService.findAll();
   }
 
   /**
@@ -32,13 +23,13 @@ export class UsersController {
    * @throws NotFoundException si no se encuentra el usuario
    * @returns Objeto `User`
    */
-  @ApiOperation({ summary: 'Obtener usuario por ID' })
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   @Get(':id')
-  getById(@Param('id') id: number): User {
-    return this.usersService.findOne(+id);
+  async getById(@Param('id') id: number): Promise<User> {
+    const user = await this.usersService.findOne(+id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
   }
 
   /**
@@ -46,12 +37,21 @@ export class UsersController {
    * @param createUserDto - Datos de la nueva propiedad
    * @returns Objeto `User` creado
    */
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @Post()
-  create(@Body() createUserDto: CreateUserDto): User {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return await this.usersService.create(createUserDto);
+  }
+
+  /**
+   * Actualiza un usuario existente con nuevos datos.
+   * @param id - Identificador único del usuario
+   * @param updateUserDto - Nuevos datos parciales del usuario
+   * @throws NotFoundException si no se encuentra el usuario
+   * @returns El usuario actualizado
+   */
+  @Put(':id')
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    return await this.usersService.update(+id, updateUserDto);
   }
 
   /**
@@ -59,12 +59,8 @@ export class UsersController {
    * @param id - Identificador único del usuario
    * @throws NotFoundException si no se encuentra el usuario
    */
-  @ApiOperation({ summary: 'Eliminar un usuario' })
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiResponse({ status: 200, description: 'Usuario eliminado' })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   @Delete(':id')
   delete(@Param('id') id: number): void {
-    this.usersService.remove(+id);
+    return this.usersService.remove(+id);
   }
 }
