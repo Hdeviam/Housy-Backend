@@ -6,7 +6,9 @@ import { User } from '../entities/user.entity';
  * hasta que se integre con una base de datos real (por ejemplo, PostgreSQL).
  */
 export class UserRepository {
+  [x: string]: any;
   private users: User[] = [];
+  findUserByEmail: any;
 
   /**
    * Obtiene todos los usuarios almacenados en memoria.
