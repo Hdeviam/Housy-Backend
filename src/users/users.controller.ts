@@ -21,7 +21,7 @@ export class UsersController {
    * Busca y devuelve un usuario por su ID.
    * @param id - Identificador único del usuario
    * @throws NotFoundException si no se encuentra el usuario
-   * @returns Objeto `User`
+   * @returns Objeto `User de forme`
    */
   @Get(':id')
   async getById(@Param('id') id: number): Promise<User> {
