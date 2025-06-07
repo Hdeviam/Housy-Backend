@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-housy_2025}
+      DB_NAME: ${DB_NAME:-housy_db}
+      LOCAL_DB_HOST: ${LOCAL_DB_HOST:-localhost}
+      LOCAL_DB_PORT: ${LOCAL_DB_PORT:-5432}
+      LOCAL_DB_USERNAME: ${LOCAL_DB_USERNAME:-postgres}
+      LOCAL_DB_PASSWORD: ${LOCAL_DB_PASSWORD:-1234}
+      LOCAL_DB_NAME: ${LOCAL_DB_NAME:-housy_local}
+      NODE_ENV: development
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+      - ./dist:/app/dist
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${LOCAL_DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD:-1234}
+      POSTGRES_DB: ${LOCAL_DB_NAME:-housy_local}
+    ports:
+      - "${LOCAL_DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
