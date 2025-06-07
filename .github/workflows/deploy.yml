@@ -12,26 +12,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Build Docker image
-        run: |
-          docker build -t housy-backend .
+      # - name: Build Docker image
+      #   run: |
+      #     docker build -t housy-backend .
 
-      - name: Push to ECR
-        run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REPO_URI="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/housy-backend"
-          $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$REPO_URI")
-          docker tag housy-backend:latest "$REPO_URI:latest"
-          docker push "$REPO_URI:latest"
+      # - name: Push to ECR
+      #   run: |
+      #     ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      #     REPO_URI="$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/housy-backend"
+      #     $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$REPO_URI")
+      #     docker tag housy-backend:latest "$REPO_URI:latest"
+      #     docker push "$REPO_URI:latest"
 
-      - name: Update ECS Task Definition
-        run: |
-          echo "Actualizando task definition..."
-          # Aquí va lógica para actualizar task definition
+      # - name: Update ECS Task Definition
+      #   run: |
+      #     echo "Actualizando task definition..."
+      #     # Aquí va lógica para actualizar task definition
