@@ -32,9 +32,7 @@ interface DatabaseConfig {
         // Configuración para AWS RDS
         const remoteConfig: DatabaseConfig = {
           type: 'postgres',
-          host:
-            process.env.DB_HOST ||
-            'housy-cluster.c0z0coi28tap.us-east-1.rds.amazonaws.com',
+          host: process.env.DB_HOST || 'housy-cluster.c0z0coi28tap.us-east-1.rds.amazonaws.com',
           port: parseInt(process.env.DB_PORT || '5432', 10),
           username: process.env.DB_USERNAME || 'postgres',
           password: process.env.DB_PASSWORD || 'housy_2025',
@@ -63,10 +61,7 @@ interface DatabaseConfig {
         };
 
         // Función mejorada para probar conexión con reintentos
-        const testConnection = async (
-          config: DatabaseConfig,
-          isRemote: boolean,
-        ) => {
+        const testConnection = async (config: DatabaseConfig, isRemote: boolean) => {
           let lastError: Error | null = null;
 
           for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -85,9 +80,7 @@ interface DatabaseConfig {
               await client.query('SELECT 1');
               await client.end();
 
-              logger.log(
-                `✅ Conexión exitosa con ${isRemote ? 'AWS RDS' : 'PostgreSQL local'}`,
-              );
+              logger.log(`✅ Conexión exitosa con ${isRemote ? 'AWS RDS' : 'PostgreSQL local'}`);
               return true;
             } catch (error) {
               lastError = error;
@@ -96,9 +89,7 @@ interface DatabaseConfig {
               );
 
               if (attempt < MAX_ATTEMPTS) {
-                await new Promise((resolve) =>
-                  setTimeout(resolve, RETRY_DELAY),
-                );
+                await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
               }
             } finally {
               try {
@@ -109,10 +100,7 @@ interface DatabaseConfig {
             }
           }
 
-          throw (
-            lastError ||
-            new Error(`No se pudo conectar después de ${MAX_ATTEMPTS} intentos`)
-          );
+          throw lastError || new Error(`No se pudo conectar después de ${MAX_ATTEMPTS} intentos`);
         };
 
         // Primero intentamos conectar a RDS
