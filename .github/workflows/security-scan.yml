@@ -19,7 +19,7 @@ jobs:
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-name: housy-backend
+          image-ref: housy-backend:latest
           exit-code: 0
           format: json
           output: trivy-results.json
