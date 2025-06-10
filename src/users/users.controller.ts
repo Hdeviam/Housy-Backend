@@ -45,13 +45,17 @@ export class UsersController {
    * Busca y devuelve un usuario por su ID.
    */
   @ApiOperation({ summary: 'Obtener usuario por ID' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   @UseGuards(AuthGuard)
   @Get(':id')
-  async getById(@Param('id') id: number): Promise<User> {
-    const user = await this.usersService.findOne(+id);
+  async getById(@Param('id') id: string): Promise<User> {
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -64,6 +68,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Crear nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: 201, description: 'Usuario creado', type: User })
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() dto: CreateUserDto): Promise<User> {
     return this.usersService.create(dto);
@@ -73,34 +78,38 @@ export class UsersController {
    * Actualiza un usuario existente.
    */
   @ApiOperation({ summary: 'Actualizar usuario' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   @UseGuards(AuthGuard)
   @Put(':id')
-  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<User> {
-    const user = await this.usersService.update(+id, dto);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return user;
+  async update(@Param('id') id: string, @Body() dto: UpdateUserDto): Promise<User> {
+    return this.usersService.update(id, dto);
   }
 
   /**
    * Elimina un usuario por su ID.
    */
   @ApiOperation({ summary: 'Eliminar usuario' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    const user = await this.usersService.findOne(+id);
+  async delete(@Param('id') id: string): Promise<void> {
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    await this.usersService.remove(+id); // 👈 Llama al método remove() definido
+    await this.usersService.delete(id);
   }
 }
