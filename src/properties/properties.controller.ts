@@ -22,7 +22,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { AuthGuard } from 'src/guards/auth.guard'; // 👈 Importa tu guard personalizado
+import { AuthGuard } from 'src/guards/auth.guard';
 import { PropertiesService } from './PropertiesService';
 
 /**
@@ -82,7 +82,6 @@ export class PropertiesController {
    */
   @ApiOperation({ summary: 'Crear una nueva propiedad' })
   @ApiBearerAuth() // 👈 Indica que requiere autenticación
-  @UseGuards(AuthGuard) // 👈 Aplica el guard a esta ruta
   @ApiBody({ type: CreatePropertyDto })
   @ApiResponse({
     status: 201,
