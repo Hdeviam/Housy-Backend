@@ -5,6 +5,7 @@ import { User } from '../entities/user.entity';
  * Se usará únicamente para desarrollo local hasta que se integre con PostgreSQL real.
  */
 export class UserRepository {
+  [x: string]: any;
   private users: User[] = [];
 
   /**
