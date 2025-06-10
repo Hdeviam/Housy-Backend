@@ -1,54 +1,46 @@
 import { User } from '../entities/user.entity';
 
 /**
- * Clase que simula una capa de acceso a datos para entidades de tipo User.
- * Esta implementación es temporal y se usará únicamente para desarrollo local,
- * hasta que se integre con una base de datos real (por ejemplo, PostgreSQL).
+ * Clase temporal que simula una capa de acceso a datos para entidades de tipo User.
+ * Se usará únicamente para desarrollo local hasta que se integre con PostgreSQL real.
  */
 export class UserRepository {
-  [x: string]: any;
   private users: User[] = [];
-  findUserByEmail: any;
 
   /**
-   * Obtiene todos los usuarios almacenados en memoria.
-   * @returns Array de objetos `User`
+   * Busca un usuario por su ID (cadena de UUID).
+   * @param id - Identificador único del usuario (formato string)
+   * @returns El usuario encontrado o undefined si no existe
    */
-  findAll(): User[] {
-    return this.users;
+  findUserById(id: string): User | undefined {
+    return this.users.find((user) => user.id === id); // 👈 Ahora ambos son string
   }
 
   /**
-   * Busca un usuario por su ID.
-   * @param id - Identificador único del usuario
+   * Busca un usuario por su correo electrónico.
+   * @param email - Correo del usuario
    * @returns El usuario encontrado o undefined si no existe
    */
-  findOne(id: number): User | undefined {
-    return this.users.find((user) => user.id === id);
+  findUserByEmail(email: string): User | undefined {
+    return this.users.find((user) => user.email === email);
   }
 
   /**
    * Crea un nuevo usuario a partir de los datos proporcionados.
    * Asigna un ID temporal aleatorio y registra fechas de creación y actualización.
-   * @param data - Datos parciales del usuario
+   * @param data - Datos iniciales del usuario
    * @returns El usuario creado
    */
-  create(data: Partial<User>): User {
-    const defaultUser: User = {
-      id: Math.floor(Math.random() * 1_000_000_000),
+  createUser(data: Partial<User>): User {
+    const newUser: User = {
+      id: this.generateUuid(), // 👈 Generamos un UUID válido
       email: '',
       name: '',
       password: '',
       role: 'client',
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
-
-    const newUser: User = {
-      ...defaultUser,
       ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     this.users.push(newUser);
@@ -57,13 +49,13 @@ export class UserRepository {
 
   /**
    * Actualiza un usuario existente con nuevos datos.
-   * @param id - Identificador único del usuario
+   * @param id - Identificador único del usuario (formato string)
    * @param data - Nuevos datos parciales del usuario
    * @throws Error si el usuario no se encuentra
    * @returns El usuario actualizado
    */
-  update(id: number, data: Partial<User>): User {
-    const index = this.users.findIndex((user) => user.id === id);
+  updateUser(id: string, data: Partial<User>): User {
+    const index = this.users.findIndex((user) => user.id === id); // 👈 Comparación correcta
     if (index < 0) throw new Error('User not found');
 
     const updated = {
@@ -77,13 +69,25 @@ export class UserRepository {
   }
 
   /**
-   * Elimina un usuario por su ID.
+   * Elimina un usuario por su ID (formato string).
    * @param id - Identificador único del usuario
    * @throws Error si el usuario no se encuentra
    */
-  delete(id: number): void {
-    const index = this.users.findIndex((user) => user.id === id);
+  deleteUser(id: string): void {
+    const index = this.users.findIndex((user) => user.id === id); // 👈 Comparación correcta
     if (index < 0) throw new Error('User not found');
     this.users.splice(index, 1);
+  }
+
+  /**
+   * Genera un UUID básico para uso temporal.
+   * @returns Un string con formato UUID v4
+   */
+  private generateUuid(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
 }
