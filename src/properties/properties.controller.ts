@@ -25,18 +25,13 @@ import {
 import { AuthGuard } from 'src/guards/auth.guard';
 import { PropertiesService } from './PropertiesService';
 
-/**
- * Controlador para gestionar operaciones relacionadas con propiedades inmobiliarias.
- * Define rutas REST para crear, leer, actualizar y eliminar propiedades.
- */
-@ApiTags('Properties') // Agrupa los endpoints bajo la etiqueta "Properties"
+@ApiTags('Properties')
 @Controller('properties')
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
 
   /**
    * Devuelve una lista de todas las propiedades registradas.
-   * @returns Array de objetos `Property`
    */
   @ApiOperation({ summary: 'Obtener todas las propiedades' })
   @ApiResponse({
@@ -45,15 +40,12 @@ export class PropertiesController {
     type: [Property],
   })
   @Get()
-  getAll(): Property[] {
+  async getAll(): Promise<Property[]> {
     return this.propertiesService.findAll();
   }
 
   /**
    * Busca y devuelve una propiedad por su ID.
-   * @param id - Identificador único de la propiedad
-   * @throws NotFoundException si no se encuentra la propiedad
-   * @returns Objeto `Property`
    */
   @ApiOperation({ summary: 'Obtener propiedad por ID' })
   @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
@@ -67,8 +59,8 @@ export class PropertiesController {
     description: 'Propiedad no encontrada',
   })
   @Get(':id')
-  getById(@Param('id') id: number): Property {
-    const property = this.propertiesService.findOne(+id);
+  async getById(@Param('id') id: number): Promise<Property> {
+    const property = await this.propertiesService.findOne(+id);
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
@@ -76,12 +68,10 @@ export class PropertiesController {
   }
 
   /**
-   * Crea una nueva propiedad a partir de los datos proporcionados en el cuerpo de la solicitud.
-   * @param createPropertyDto - Datos de la nueva propiedad
-   * @returns Objeto `Property` creado
+   * Crea una nueva propiedad a partir de los datos proporcionados.
    */
   @ApiOperation({ summary: 'Crear una nueva propiedad' })
-  @ApiBearerAuth() // 👈 Indica que requiere autenticación
+  @ApiBearerAuth()
   @ApiBody({ type: CreatePropertyDto })
   @ApiResponse({
     status: 201,
@@ -93,16 +83,12 @@ export class PropertiesController {
     description: 'Datos inválidos',
   })
   @Post()
-  create(@Body() createPropertyDto: CreatePropertyDto): Property {
+  async create(@Body() createPropertyDto: CreatePropertyDto): Promise<Property> {
     return this.propertiesService.create(createPropertyDto);
   }
 
   /**
    * Actualiza una propiedad existente con nuevos datos.
-   * @param id - Identificador único de la propiedad
-   * @param updatePropertyDto - Nuevos datos parciales de la propiedad
-   * @throws NotFoundException si no se encuentra la propiedad
-   * @returns La propiedad actualizada
    */
   @ApiOperation({ summary: 'Actualizar una propiedad' })
   @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
@@ -119,14 +105,15 @@ export class PropertiesController {
     description: 'Propiedad no encontrada',
   })
   @Put(':id')
-  update(@Param('id') id: number, @Body() updatePropertyDto: UpdatePropertyDto): Property {
+  async update(
+    @Param('id') id: number,
+    @Body() updatePropertyDto: UpdatePropertyDto,
+  ): Promise<Property> {
     return this.propertiesService.update(+id, updatePropertyDto);
   }
 
   /**
    * Elimina una propiedad por su ID.
-   * @param id - Identificador único de la propiedad
-   * @throws NotFoundException si no se encuentra la propiedad
    */
   @ApiOperation({ summary: 'Eliminar una propiedad' })
   @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
@@ -141,14 +128,16 @@ export class PropertiesController {
     description: 'Propiedad no encontrada',
   })
   @Delete(':id')
-  delete(@Param('id') id: number): void {
-    this.propertiesService.remove(+id);
+  async delete(@Param('id') id: number): Promise<void> {
+    const property = await this.propertiesService.findOne(+id);
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+    await this.propertiesService.remove(+id);
   }
 
   /**
    * Busca propiedades por ubicación o título (búsqueda parcial).
-   * @param query - Término de búsqueda
-   * @returns Array de propiedades coincidentes
    */
   @ApiOperation({ summary: 'Buscar propiedades por ubicación o título' })
   @ApiQuery({
@@ -162,7 +151,7 @@ export class PropertiesController {
     type: [Property],
   })
   @Get('search')
-  search(@Query('query') query: string): Property[] {
+  async search(@Query('query') query: string): Promise<Property[]> {
     return this.propertiesService.search(query);
   }
 }
