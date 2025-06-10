@@ -1,28 +1,54 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  NotFoundException,
+  UseGuards,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
-import { UsersService } from './users.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
+
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
    * Devuelve una lista de todos los usuarios registrados.
-   * @returns Array de objetos `User`
    */
+  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
+  @UseGuards(AuthGuard)
   @Get()
   async getAll(): Promise<User[]> {
-    return await this.usersService.findAll();
+    return this.usersService.findAll();
   }
 
   /**
    * Busca y devuelve un usuario por su ID.
-   * @param id - Identificador único del usuario
-   * @throws NotFoundException si no se encuentra el usuario
-   * @returns Objeto `User de forme`
    */
+  @ApiOperation({ summary: 'Obtener usuario por ID' })
+  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  @UseGuards(AuthGuard)
   @Get(':id')
   async getById(@Param('id') id: number): Promise<User> {
     const user = await this.usersService.findOne(+id);
@@ -33,34 +59,48 @@ export class UsersController {
   }
 
   /**
-   * Crea un nuevo usuario a partir de los datos proporcionados en el cuerpo de la solicitud.
-   * @param createUserDto - Datos de la nueva propiedad
-   * @returns Objeto `User` creado
+   * Crea un nuevo usuario.
    */
+  @ApiOperation({ summary: 'Crear nuevo usuario' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'Usuario creado', type: User })
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersService.create(createUserDto);
+  async create(@Body() dto: CreateUserDto): Promise<User> {
+    return this.usersService.create(dto);
   }
 
   /**
-   * Actualiza un usuario existente con nuevos datos.
-   * @param id - Identificador único del usuario
-   * @param updateUserDto - Nuevos datos parciales del usuario
-   * @throws NotFoundException si no se encuentra el usuario
-   * @returns El usuario actualizado
+   * Actualiza un usuario existente.
    */
+  @ApiOperation({ summary: 'Actualizar usuario' })
+  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  @UseGuards(AuthGuard)
   @Put(':id')
-  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<User> {
+    const user = await this.usersService.update(+id, dto);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
   }
 
   /**
    * Elimina un usuario por su ID.
-   * @param id - Identificador único del usuario
-   * @throws NotFoundException si no se encuentra el usuario
    */
+  @ApiOperation({ summary: 'Eliminar usuario' })
+  @ApiParam({ name: 'id', example: 1, description: 'ID del usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: number): void {
-    return this.usersService.remove(+id);
+  async delete(@Param('id') id: number): Promise<void> {
+    const user = await this.usersService.findOne(+id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    await this.usersService.remove(+id); // 👈 Llama al método remove() definido
   }
 }
