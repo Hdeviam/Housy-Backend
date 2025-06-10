@@ -1,13 +1,12 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from 'src/dto/create-user.dto';
-import { UpdateUserDto } from 'src/dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  [x: string]: any;
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -17,7 +16,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -26,11 +25,11 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(dto);
+    const user = this.userRepository.create(dto); // 👈 TypeORM asigna UUID automáticamente
     return await this.userRepository.save(user);
   }
 
-  async update(id: number, dto: UpdateUserDto): Promise<User> {
+  async update(id: string, dto: UpdateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findOneBy({ id });
 
     if (!existingUser) {
@@ -41,7 +40,7 @@ export class UsersService {
     return await this.userRepository.save(updatedUser);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const result = await this.userRepository.delete(id);
 
     if (result.affected === 0) {

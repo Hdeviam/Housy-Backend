@@ -1,15 +1,7 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
-
-interface User {
-  id: string;
-  // Add other user properties here as needed
-}
-
-interface RequestWithUser extends Request {
-  user: User;
-}
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -19,7 +11,7 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -29,24 +21,13 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<RequestWithUser>();
-    const authHeader = request.headers.get('authorization');
-    const token = authHeader?.split('Bearer ')[1] ?? '';
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
 
-    if (!token) {
-      return false;
+    if (!user) {
+      throw new UnauthorizedException('No token provided');
     }
 
-    try {
-      const decoded = this.jwtService.verify<User>(token, {
-        secret: process.env.JWT_SECRET,
-      });
-
-      request.user = decoded;
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    return true;
   }
 }

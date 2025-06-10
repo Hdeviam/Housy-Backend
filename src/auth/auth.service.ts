@@ -1,21 +1,21 @@
-/* eslint-disable @typescript-eslint/await-thenable */
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { AuthRepository } from '../repository/auth.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
-import { User } from '../entities/user.entity';
-import { UserRole } from '../dto/create-user.dto'; // 👈 Importa el enum UserRole
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/entities/user.entity';
+import { UserRole } from 'src/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly authRepository: AuthRepository) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-  /**
-   * Registra un nuevo usuario.
-   */
   async register(registerDto: RegisterDto): Promise<User> {
-    const existingUser = await this.authRepository.findUserByEmail(registerDto.email);
+    const existingUser = await this.userRepository.findOneBy({ email: registerDto.email });
 
     if (existingUser) {
       throw new BadRequestException('Email already in use');
@@ -23,23 +23,20 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    const newUser: Partial<User> = {
+    const newUser = this.userRepository.create({
       email: registerDto.email,
       name: registerDto.name,
       password: hashedPassword,
-      role: UserRole.client, // 👈 Usa el enum UserRole
+      role: UserRole.client,
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
+    });
 
-    return this.authRepository.createUser(newUser);
+    return await this.userRepository.save(newUser);
   }
 
-  /**
-   * Valida las credenciales de un usuario.
-   */
   async validateUser(loginDto: LoginDto): Promise<User | null> {
-    const user = await this.authRepository.findUserByEmail(loginDto.email);
+    const user = await this.userRepository.findOneBy({ email: loginDto.email });
 
     if (!user) {
       return null;

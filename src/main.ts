@@ -4,8 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  //await app.enableCors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'], credentials: true });
-
   // ✅ Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Inmobiliaria API')
