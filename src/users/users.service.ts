@@ -1,65 +1,51 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserRepository } from '../repository/user.repository';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { UpdateUserDto } from 'src/dto/update-user.dto';
 
-/**
- * Servicio para manejar operaciones CRUD sobre usuarios.
- * Usa una capa de repositorio para separar la lógica de negocio del acceso a datos.
- */
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  [x: string]: any;
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-  /**
-   * Obtiene todos los usuarios almacenados.
-   * @returns Array de objetos `User`
-   */
   async findAll(): Promise<User[]> {
-    return await this.userRepository.findAll();
+    return this.userRepository.find();
   }
 
-  /**
-   * Busca un usuario por su ID.
-   * @param id - Identificador único del usuario
-   * @throws NotFoundException si no se encuentra el usuario
-   * @returns Objeto `User`
-   */
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return user;
   }
 
-  /**
-   * Crea un nuevo usuario a partir de los datos proporcionados.
-   * @param createUserDto - Datos iniciales del usuario
-   * @returns El usuario creado
-   */
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userRepository.create(createUserDto);
+  async create(dto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(dto);
+    return await this.userRepository.save(user);
   }
 
-  /**
-   * Actualiza un usuario existente con nuevos datos.
-   * @param id - Identificador único del usuario
-   * @param updateUserDto - Nuevos datos parciales del usuario
-   * @throws NotFoundException si no se encuentra el usuario
-   * @returns El usuario actualizado
-   */
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.userRepository.update(id, updateUserDto);
+  async update(id: number, dto: UpdateUserDto): Promise<User> {
+    const existingUser = await this.userRepository.findOneBy({ id });
+
+    if (!existingUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const updatedUser = this.userRepository.merge(existingUser, dto);
+    return await this.userRepository.save(updatedUser);
   }
 
-  /**
-   * Elimina un usuario por su ID.
-   * @param id - Identificador único del usuario
-   * @throws NotFoundException si no se encuentra el usuario
-   */
-  remove(id: number): void {
-    this.userRepository.delete(id);
+  async delete(id: number): Promise<void> {
+    const result = await this.userRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
   }
 }
