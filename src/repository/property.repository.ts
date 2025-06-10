@@ -6,6 +6,7 @@ import { Property } from '../entities/property.entity';
  * hasta que se integre con una base de datos real (por ejemplo, PostgreSQL).
  */
 export class PropertyRepository {
+  [x: string]: any;
   private readonly properties: Property[] = [];
 
   /**

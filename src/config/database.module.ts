@@ -55,7 +55,7 @@ interface DatabaseConfig {
           password: process.env.LOCAL_DB_PASSWORD || 'postgres',
           database: process.env.LOCAL_DB_NAME || 'housy_db',
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: process.env.NODE_ENV === 'development',
+          synchronize: true,
           ssl: undefined,
           extra: undefined,
         };

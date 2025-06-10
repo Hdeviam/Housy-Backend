@@ -1,8 +1,15 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryColumn('uuid') // 👈 Esto define el tipo de ID como UUID
+  [x: string]: any;
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true })

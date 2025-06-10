@@ -12,6 +12,7 @@ import {
  */
 @Entity()
 export class Property {
+  [x: string]: any;
   /**
    * Identificador único de la propiedad.
    */
