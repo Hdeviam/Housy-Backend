@@ -1,19 +1,40 @@
+/* eslint-disable @typescript-eslint/await-thenable */
+import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from 'src/dto/register.dto';
 import { LoginDto } from 'src/dto/login.dto';
-import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Registra un nuevo usuario.
+   */
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({ status: 201, description: 'Usuario registrado correctamente' })
   @Post('register')
-  register(@Body() registerDto: RegisterDto): any {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto): Promise<any> {
+    return await this.authService.register(registerDto);
   }
 
+  /**
+   * Inicia sesión y valida usuario.
+   * Retorna token de acceso si las credenciales son válidas.
+   */
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Login exitoso, token generado' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
   @Post('login')
-  login(@Body() loginDto: LoginDto): any {
-    return this.authService.validateUser(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<any> {
+    const user = await this.authService.validateUser(loginDto);
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+    return user;
   }
 }
