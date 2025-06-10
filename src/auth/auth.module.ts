@@ -9,12 +9,12 @@ import { AuthRepository } from 'src/repository/auth.repository';
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'default-secret', // usa variable de entorno o valor por defecto
-      signOptions: { expiresIn: '1h' }, // tiempo de expiración del token
+      secret: process.env.JWT_SECRET || 'default-secret',
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthRepository],
-  exports: [AuthService, JwtModule], // 👈 exporta JwtModule para que otros módulos puedan inyectar JwtService
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
