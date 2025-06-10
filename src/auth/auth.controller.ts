@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/await-thenable */
 import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from 'src/dto/register.dto';
-import { LoginDto } from 'src/dto/login.dto';
+import { RegisterDto } from '../dto/register.dto';
+import { LoginDto } from '../dto/login.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Auth')
