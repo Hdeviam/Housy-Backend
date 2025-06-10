@@ -53,9 +53,9 @@ interface DatabaseConfig {
           port: parseInt(process.env.LOCAL_DB_PORT || '5432', 10),
           username: process.env.LOCAL_DB_USERNAME || 'postgres',
           password: process.env.LOCAL_DB_PASSWORD || 'postgres',
-          database: process.env.LOCAL_DB_NAME || 'housy_local',
+          database: process.env.LOCAL_DB_NAME || 'housy_db',
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: false,
+          synchronize: process.env.NODE_ENV === 'development',
           ssl: undefined,
           extra: undefined,
         };
