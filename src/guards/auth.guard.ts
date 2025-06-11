@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -22,10 +25,17 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const token = request.headers.authorization?.split(' ')[1];
 
-    if (!user) {
+    if (!token) {
       throw new UnauthorizedException('No token provided');
+    }
+
+    try {
+      const decoded = this.jwtService.verify(token); // 👈 Verifica el token
+      request.user = decoded; // 👈 Asigna el usuario decodificado
+    } catch (err) {
+      throw new UnauthorizedException('Invalid token');
     }
 
     return true;
