@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'; // Importa bcrypt para hashear contraseñas
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,9 +25,14 @@ export class UsersService {
 
   // Crea un nuevo usuario y hashea su contraseña
   async create(dto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(dto.password, 10); // Hashea la contraseña con un salt de 10
-    const newUser = this.userRepository.create({ ...dto, password: hashedPassword }); // Crea instancia de usuario
-    return this.userRepository.save(newUser); // Guarda en la base de datos
+    const existingUser = await this.userRepository.findOneBy({ email: dto.email });
+
+    if (existingUser) {
+      throw new ConflictException('Ya existe un usuario con ese correo electrónico.');
+    }
+
+    const user = this.userRepository.create(dto);
+    return await this.userRepository.save(user);
   }
 
   // Actualiza un usuario, y si viene una nueva contraseña, también la hashea
