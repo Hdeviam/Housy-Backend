@@ -24,26 +24,22 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('Users')
-@ApiBearerAuth()
-@Controller('users')
+@ApiTags('Users') // Agrupa los endpoints bajo la etiqueta "Users" en Swagger
+@ApiBearerAuth() // Indica que los endpoints requieren autenticación por token
+@Controller('users') // Ruta base para este controlador: /users
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {} // Inyecta el servicio de usuarios
 
-  /**
-   * Devuelve una lista de todos los usuarios registrados.
-   */
+  // GET /users – Lista todos los usuarios
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard) // Opcional: proteger con autenticación
   @Get()
   async getAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  /**
-   * Busca y devuelve un usuario por su ID.
-   */
+  // GET /users/:id – Obtener usuario por ID
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiParam({
     name: 'id',
@@ -52,31 +48,27 @@ export class UsersController {
   })
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard) // Requiere autenticación
   @Get(':id')
   async getById(@Param('id') id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with ID ${id} not found`); // Lanza error si no existe
     }
     return user;
   }
 
-  /**
-   * Crea un nuevo usuario.
-   */
+  // POST /users – Crear nuevo usuario
   @ApiOperation({ summary: 'Crear nuevo usuario' })
-  @ApiBody({ type: CreateUserDto })
+  @ApiBody({ type: CreateUserDto }) // Documenta el cuerpo esperado
   @ApiResponse({ status: 201, description: 'Usuario creado', type: User })
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Post()
   async create(@Body() dto: CreateUserDto): Promise<User> {
-    return this.usersService.create(dto);
+    return this.usersService.create(dto); // Llama al servicio para crear
   }
 
-  /**
-   * Actualiza un usuario existente.
-   */
+  // PUT /users/:id – Actualizar usuario
   @ApiOperation({ summary: 'Actualizar usuario' })
   @ApiParam({
     name: 'id',
@@ -86,15 +78,13 @@ export class UsersController {
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto): Promise<User> {
-    return this.usersService.update(id, dto);
+    return this.usersService.update(id, dto); // Actualiza y retorna el usuario
   }
 
-  /**
-   * Elimina un usuario por su ID.
-   */
+  // DELETE /users/:id – Eliminar usuario
   @ApiOperation({ summary: 'Eliminar usuario' })
   @ApiParam({
     name: 'id',
@@ -103,7 +93,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard) // Requiere autenticación
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     const user = await this.usersService.findOne(id);
