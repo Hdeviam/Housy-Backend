@@ -12,10 +12,10 @@ export class AuthController {
   /**
    * Registra un nuevo usuario.
    */
+  @Post('register')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiBody({ type: RegisterDto })
   @ApiResponse({ status: 201, description: 'Usuario registrado correctamente' })
-  @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<any> {
     return await this.authService.register(registerDto);
   }
@@ -24,16 +24,18 @@ export class AuthController {
    * Inicia sesión y valida usuario.
    * Retorna token de acceso si las credenciales son válidas.
    */
+  @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, description: 'Login exitoso, token generado' })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
-  @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<any> {
+  async login(@Body() loginDto: LoginDto): Promise<{ access_token: string; user: any }> {
     const user = await this.authService.validateUser(loginDto);
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
-    return user;
+
+    const accessToken = this.authService.generateToken(user); // 👈 Genera el token
+    return { access_token: accessToken, user }; // 👈 Devuelve el token y el usuario
   }
 }
