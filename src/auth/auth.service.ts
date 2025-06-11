@@ -4,39 +4,44 @@ import { Repository } from 'typeorm';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt'; // 👈 Importa JwtService
+import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
-import { UserRole } from 'src/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtService: JwtService, // 👈 Inyecta JwtService
+    private jwtService: JwtService,
   ) {}
 
+  /**
+   * Registra un nuevo usuario.
+   * @param registerDto - Datos del usuario a registrar
+   * @returns Objeto de usuario creado
+   */
   async register(registerDto: RegisterDto): Promise<User> {
     const existingUser = await this.userRepository.findOneBy({ email: registerDto.email });
 
     if (existingUser) {
-      throw new BadRequestException('Email already in use');
+      throw new BadRequestException('El correo electrónico ya está en uso.');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
     const newUser = this.userRepository.create({
-      email: registerDto.email,
-      name: registerDto.name,
+      ...registerDto,
       password: hashedPassword,
-      role: UserRole.client,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     return await this.userRepository.save(newUser);
   }
 
+  /**
+   * Valida las credenciales de un usuario.
+   * @param loginDto - Datos de inicio de sesión
+   * @returns Usuario validado o null si no coincide
+   */
   async validateUser(loginDto: LoginDto): Promise<User | null> {
     const user = await this.userRepository.findOneBy({ email: loginDto.email });
 
@@ -64,6 +69,6 @@ export class AuthService {
       name: user.name,
       role: user.role,
     };
-    return this.jwtService.sign(payload); // 👈 Firma con JwtService
+    return this.jwtService.sign(payload);
   }
 }
