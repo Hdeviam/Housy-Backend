@@ -1,8 +1,8 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
+  Get,
   Param,
   Put,
   Delete,
@@ -13,52 +13,33 @@ import {
 import { CreatePropertyDto } from '../dto/create-property.dto';
 import { UpdatePropertyDto } from '../dto/update-property.dto';
 import { Property } from '../entities/property.entity';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiParam,
-  ApiBody,
-  ApiBearerAuth,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { PropertiesService } from './PropertiesService';
 
-@ApiTags('Properties')
+@ApiTags('Properties') // Agrupa los endpoints bajo la etiqueta "Properties"
 @Controller('properties')
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
 
   /**
    * Devuelve una lista de todas las propiedades registradas.
+   * @returns Array de objetos `Property`
    */
-  @ApiOperation({ summary: 'Obtener todas las propiedades' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de todas las propiedades',
-    type: [Property],
-  })
   @Get()
+  @UseGuards(AuthGuard)
   async getAll(): Promise<Property[]> {
     return this.propertiesService.findAll();
   }
 
   /**
    * Busca y devuelve una propiedad por su ID.
+   * @param id - Identificador único de la propiedad
+   * @throws NotFoundException si no se encuentra la propiedad
+   * @returns Objeto `Property`
    */
-  @ApiOperation({ summary: 'Obtener propiedad por ID' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
-  @ApiResponse({
-    status: 200,
-    description: 'Propiedad encontrada',
-    type: Property,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Propiedad no encontrada',
-  })
   @Get(':id')
+  //@UseGuards(AuthGuard)
   async getById(@Param('id') id: number): Promise<Property> {
     const property = await this.propertiesService.findOne(+id);
     if (!property) {
@@ -69,42 +50,24 @@ export class PropertiesController {
 
   /**
    * Crea una nueva propiedad a partir de los datos proporcionados.
+   * @param createPropertyDto - Datos iniciales de la propiedad
+   * @returns La propiedad creada
    */
-  @ApiOperation({ summary: 'Crear una nueva propiedad' })
-  @ApiBearerAuth()
-  @ApiBody({ type: CreatePropertyDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Propiedad creada exitosamente',
-    type: Property,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Datos inválidos',
-  })
   @Post()
+  //@UseGuards(AuthGuard)
   async create(@Body() createPropertyDto: CreatePropertyDto): Promise<Property> {
     return this.propertiesService.create(createPropertyDto);
   }
 
   /**
    * Actualiza una propiedad existente con nuevos datos.
+   * @param id - Identificador único de la propiedad
+   * @param updatePropertyDto - Nuevos datos parciales de la propiedad
+   * @throws NotFoundException si no se encuentra la propiedad
+   * @returns La propiedad actualizada
    */
-  @ApiOperation({ summary: 'Actualizar una propiedad' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @ApiBody({ type: UpdatePropertyDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Propiedad actualizada exitosamente',
-    type: Property,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Propiedad no encontrada',
-  })
   @Put(':id')
+  @UseGuards(AuthGuard)
   async update(
     @Param('id') id: number,
     @Body() updatePropertyDto: UpdatePropertyDto,
@@ -114,20 +77,11 @@ export class PropertiesController {
 
   /**
    * Elimina una propiedad por su ID.
+   * @param id - Identificador único de la propiedad
+   * @throws NotFoundException si no se encuentra la propiedad
    */
-  @ApiOperation({ summary: 'Eliminar una propiedad' })
-  @ApiParam({ name: 'id', example: 1, description: 'ID de la propiedad' })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @ApiResponse({
-    status: 200,
-    description: 'Propiedad eliminada exitosamente',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Propiedad no encontrada',
-  })
   @Delete(':id')
+  @UseGuards(AuthGuard)
   async delete(@Param('id') id: number): Promise<void> {
     const property = await this.propertiesService.findOne(+id);
     if (!property) {
@@ -138,19 +92,22 @@ export class PropertiesController {
 
   /**
    * Busca propiedades por ubicación o título (búsqueda parcial).
+   * @param query - Término de búsqueda
+   * @returns Array de propiedades coincidentes
    */
-  @ApiOperation({ summary: 'Buscar propiedades por ubicación o título' })
+  @Get('search')
+  @UseGuards(AuthGuard)
   @ApiQuery({
     name: 'query',
-    example: 'Madrid',
+    example: 'Playa',
     description: 'Término de búsqueda (ubicación o título)',
   })
+  @ApiOperation({ summary: 'Buscar propiedades por ubicación o título' })
   @ApiResponse({
     status: 200,
     description: 'Lista de propiedades coincidentes',
     type: [Property],
   })
-  @Get('search')
   async search(@Query('query') query: string): Promise<Property[]> {
     return this.propertiesService.search(query);
   }
