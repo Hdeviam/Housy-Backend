@@ -4,11 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Lead } from './lead.entity';
 
 @Entity()
 export class User {
-  [x: string]: any;
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,4 +30,10 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  /**
+   * Todos los leads generados por este usuario.
+   */
+  @OneToMany(() => Lead, (lead) => lead.user)
+  leads: Lead[];
 }
