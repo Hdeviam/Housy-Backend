@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -15,13 +14,13 @@ export class Lead {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.leads, { nullable: true })
+  @ManyToOne(() => User, (user) => user.leads)
   user: User;
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: 'uuid', nullable: true }) // 👈 Permite valores null
   userId: string;
 
-  @ManyToOne(() => Property, (property) => property.leads)
+  @ManyToOne(() => Property, (property) => property.leads) // 👈 Esta parte ahora funciona
   property: Property;
 
   @Column({ type: 'uuid' })

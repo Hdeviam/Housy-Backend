@@ -41,6 +41,7 @@ export class UserRepository {
       role: 'client',
       createdAt: new Date(),
       updatedAt: new Date(),
+      leads: [], // Inicializar leads como un array vacío
       ...data,
     };
 
