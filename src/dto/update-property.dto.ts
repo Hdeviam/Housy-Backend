@@ -1,41 +1,52 @@
+import { IsString, IsNumber, Min, IsOptional, IsArray, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * DTO para actualizar parcialmente una propiedad inmobiliaria.
- * Permite actualizar solo algunos campos sin necesidad de enviar todos.
  */
 export class UpdatePropertyDto {
-  /**
-   * Título actualizado de la propiedad.
-   * @example "Casa en el centro"
-   */
-  @ApiProperty({ example: 'Casa en el centro', required: false })
+  @ApiProperty({ example: 'Casa en Playa', required: false })
+  @IsOptional()
+  @IsString()
   title?: string;
-  /**
-   * Precio actualizado de la propiedad.
-   * Debe ser un número positivo.
-   */
+
+  @ApiProperty({ example: 'Casa amplia con jardín y piscina.', required: false })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @ApiProperty({ example: 375000, required: false })
+  @IsOptional()
+  @IsNumber()
   price?: number;
 
-  /**
-   * Número actualizado de habitaciones.
-   * Debe ser un número positivo.
-   */
   @ApiProperty({ example: 4, required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
   bedrooms?: number;
 
-  /**
-   * Número actualizado de baños.
-   * Debe ser un número positivo.
-   */
   @ApiProperty({ example: 2, required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
   bathrooms?: number;
 
-  /**
-   * Ubicación actualizada de la propiedad.
-   * @example "Madrid, España"
-   */
-  @ApiProperty({ example: 'Madrid, España', required: false })
+  @ApiProperty({ example: 'Barcelona, España', required: false })
+  @IsOptional()
+  @IsString()
   location?: string;
+
+  /**
+   * URLs de las fotos de la propiedad (opcional).
+   * Pueden ser URLs de imágenes ya cargadas en un servicio como AWS S3.
+   */
+  @ApiProperty({
+    example: ['https://example.com/photo1.jpg', 'https://example.com/photo2.jpg'],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUrl({}, { each: true }) // Cada URL debe ser válida
+  photos?: string[];
 }
