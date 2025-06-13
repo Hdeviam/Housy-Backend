@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Param, Get } from '@nestjs/common';
 import { EnrichedPropertyParamsService } from './enrichedPropertyParams.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
@@ -39,5 +39,31 @@ export class EnrichedPropertyParamsController {
       propertyId,
     };
     return this.enrichedPropertyParamsService.enrichPropertyParams(dto);
+  }
+
+  /**
+   * Endpoint para obtener una ficha enriquecida previamente guardada.
+   */
+  @Get(':propertyId')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Obtener ficha enriquecida guardada de una propiedad' })
+  @ApiParam({
+    name: 'propertyId',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID de la propiedad cuya ficha se quiere obtener',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Ficha enriquecida obtenida correctamente',
+    type: EnrichedPropertyParamsResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Ficha enriquecida no encontrada',
+  })
+  async getEnrichedPropertyParams(
+    @Param('propertyId') propertyId: string,
+  ): Promise<EnrichedPropertyParamsResponseDto> {
+    return this.enrichedPropertyParamsService.getEnrichedPropertyParams(propertyId);
   }
 }
