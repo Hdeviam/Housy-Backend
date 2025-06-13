@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,7 +19,7 @@ export class AuthService {
   /**
    * Registra un nuevo usuario.
    * @param registerDto - Datos del usuario a registrar
-   * @returns Objeto de usuario creado
+   * @returns Objeto de usuario creado (sin la contraseña)
    */
   async register(registerDto: RegisterDto): Promise<User> {
     const existingUser = await this.userRepository.findOneBy({ email: registerDto.email });
@@ -34,7 +35,11 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    return await this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
+
+    // ✅ Excluir el password al devolver
+    const { password, ...userWithoutPassword } = savedUser;
+    return userWithoutPassword as User;
   }
 
   /**
@@ -43,18 +48,19 @@ export class AuthService {
    * @returns Usuario validado o null si no coincide
    */
   async validateUser(loginDto: LoginDto): Promise<User | null> {
-    const user = await this.userRepository.findOneBy({ email: loginDto.email });
+    const user = await this.userRepository.findOne({
+      where: { email: loginDto.email },
+      select: ['id', 'email', 'password', 'name', 'role'],
+    });
 
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
 
     const passwordValid = await bcrypt.compare(loginDto.password, user.password);
-    if (!passwordValid) {
-      return null;
-    }
+    if (!passwordValid) return null;
 
-    return user;
+    // ✅ Excluir el password al devolver
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword as User;
   }
 
   /**
