@@ -13,11 +13,13 @@ import {
 import { CreatePropertyDto } from '../dto/create-property.dto';
 import { UpdatePropertyDto } from '../dto/update-property.dto';
 import { Property } from '../entities/property.entity';
-import { ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 import { PropertiesService } from './PropertiesService';
 
-@ApiTags('Properties') // Agrupa los endpoints bajo la etiqueta "Properties"
+@ApiTags('Properties') // Agrupa los endpoints bajo la etiqueta "Properties" en Swagger
 @Controller('properties')
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
@@ -27,7 +29,10 @@ export class PropertiesController {
    * @returns Array de objetos `Property`
    */
   @Get()
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client')
+  @ApiOperation({ summary: 'Obtener todas las propiedades' })
+  @ApiResponse({ status: 200, description: 'Lista de propiedades', type: [Property] })
   async getAll(): Promise<Property[]> {
     return this.propertiesService.findAll();
   }
@@ -39,9 +44,18 @@ export class PropertiesController {
    * @returns Objeto `Property`
    */
   @Get(':id')
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client')
+  @ApiOperation({ summary: 'Obtener propiedad por ID' })
+  @ApiParam({
+    name: 'id',
+    example: 1,
+    description: 'ID de la propiedad',
+  })
+  @ApiResponse({ status: 200, description: 'Propiedad encontrada', type: Property })
+  @ApiResponse({ status: 404, description: 'Propiedad no encontrada' })
   async getById(@Param('id') id: number): Promise<Property> {
-    const property = await this.propertiesService.findOne(+id);
+    const property = await this.propertiesService.findOne(id);
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
@@ -54,7 +68,12 @@ export class PropertiesController {
    * @returns La propiedad creada
    */
   @Post()
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent') // 👈 Solo agentes o admins pueden crear propiedades
+  @ApiOperation({ summary: 'Crear una nueva propiedad' })
+  @ApiBody({ type: CreatePropertyDto }) // Documenta el cuerpo esperado
+  @ApiResponse({ status: 201, description: 'Propiedad creada', type: Property })
+  @ApiResponse({ status: 403, description: 'Acceso denegado por falta de permisos' })
   async create(@Body() createPropertyDto: CreatePropertyDto): Promise<Property> {
     return this.propertiesService.create(createPropertyDto);
   }
@@ -67,12 +86,23 @@ export class PropertiesController {
    * @returns La propiedad actualizada
    */
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent') // 👈 Solo agentes o admins pueden actualizar propiedades
+  @ApiOperation({ summary: 'Actualizar propiedad' })
+  @ApiParam({
+    name: 'id',
+    example: 1,
+    description: 'ID de la propiedad',
+  })
+  @ApiBody({ type: UpdatePropertyDto }) // Documenta el cuerpo esperado
+  @ApiResponse({ status: 200, description: 'Propiedad actualizada', type: Property })
+  @ApiResponse({ status: 404, description: 'Propiedad no encontrada' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado por falta de permisos' })
   async update(
     @Param('id') id: number,
     @Body() updatePropertyDto: UpdatePropertyDto,
   ): Promise<Property> {
-    return this.propertiesService.update(+id, updatePropertyDto);
+    return this.propertiesService.update(id, updatePropertyDto);
   }
 
   /**
@@ -81,13 +111,23 @@ export class PropertiesController {
    * @throws NotFoundException si no se encuentra la propiedad
    */
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin') // 👈 Solo admins pueden eliminar propiedades
+  @ApiOperation({ summary: 'Eliminar propiedad' })
+  @ApiParam({
+    name: 'id',
+    example: 1,
+    description: 'ID de la propiedad',
+  })
+  @ApiResponse({ status: 200, description: 'Propiedad eliminada' })
+  @ApiResponse({ status: 404, description: 'Propiedad no encontrada' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado por falta de permisos' })
   async delete(@Param('id') id: number): Promise<void> {
-    const property = await this.propertiesService.findOne(+id);
+    const property = await this.propertiesService.findOne(id);
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
-    await this.propertiesService.remove(+id);
+    await this.propertiesService.remove(id);
   }
 
   /**
@@ -96,7 +136,8 @@ export class PropertiesController {
    * @returns Array de propiedades coincidentes
    */
   @Get('search')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client') // 👈 Todos los roles pueden buscar propiedades
   @ApiQuery({
     name: 'query',
     example: 'Playa',
