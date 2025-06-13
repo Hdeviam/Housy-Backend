@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Lead } from './lead.entity';
+import { EnrichedPropertyParams } from './enrichedPropertyParams.entity';
 
 @Entity()
 export class Property {
@@ -45,4 +46,10 @@ export class Property {
    */
   @OneToMany(() => Lead, (lead) => lead.property)
   leads: Lead[]; // 👈 Aquí es donde falta el campo
+
+  @OneToMany(
+    () => EnrichedPropertyParams,
+    (enrichedPropertyParams) => enrichedPropertyParams.property,
+  )
+  enrichedPropertyParams: EnrichedPropertyParams[];
 }

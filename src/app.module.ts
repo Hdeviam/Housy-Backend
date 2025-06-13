@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { LeadsModule } from './leads/leads.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
+import { EnrichedPropertyParamsModule } from './enrichedPropertyParams/enrichedPropertyParams.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AiIntegrationModule } from './ai-integration/ai-integration.module';
     DatabaseModule,
     LeadsModule,
     AiIntegrationModule,
+    EnrichedPropertyParamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
