@@ -11,7 +11,7 @@ import { Property } from './property.entity';
 
 @Entity()
 export class Lead {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @ManyToOne(() => User, (user) => user.leads)
@@ -20,7 +20,7 @@ export class Lead {
   @Column({ type: 'uuid', nullable: true }) // 👈 Permite valores null
   userId: string;
 
-  @ManyToOne(() => Property, (property) => property.leads) // 👈 Esta parte ahora funciona
+  @ManyToOne(() => Property, (property) => property.leads)
   property: Property;
 
   @Column({ type: 'uuid' })
