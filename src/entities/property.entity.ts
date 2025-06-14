@@ -11,6 +11,7 @@ import { EnrichedPropertyParams } from './enrichedPropertyParams.entity';
 
 @Entity()
 export class Property {
+  [x: string]: any;
   @PrimaryGeneratedColumn()
   id: number;
 
