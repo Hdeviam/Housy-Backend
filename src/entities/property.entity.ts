@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Lead } from './lead.entity';
 import { EnrichedPropertyParams } from './enrichedPropertyParams.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Property {
@@ -33,7 +36,7 @@ export class Property {
   @Column()
   location: string;
 
-  @Column('simple-array', { nullable: true }) // 👈 Guarda array como texto
+  @Column('simple-array', { nullable: true })
   photos: string[];
 
   @CreateDateColumn()
@@ -43,11 +46,17 @@ export class Property {
   updatedAt: Date;
 
   @OneToMany(() => Lead, (lead) => lead.property)
-  leads: Lead[]; // 👈 Aquí es donde falta el campo
+  leads: Lead[];
 
-  @OneToMany(
-    () => EnrichedPropertyParams,
-    (enrichedPropertyParams) => enrichedPropertyParams.property,
-  )
+  @OneToMany(() => EnrichedPropertyParams, (params) => params.property)
   enrichedPropertyParams: EnrichedPropertyParams[];
+
+  // 👇 Relación con usuario opcional
+  @ManyToOne(() => User, (user) => user.properties, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  // 👇 userId también debe ser nullable
+  @Column({ type: 'uuid', nullable: true })
+  userId: string | null;
 }
