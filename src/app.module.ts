@@ -9,6 +9,7 @@ import { LeadsModule } from './leads/leads.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
 import { EnrichedPropertyParamsModule } from './enrichedPropertyParams/enrichedPropertyParams.module';
 import { PhotosModule } from './photos/photos.module';
+import { VisitsModule } from './visits/visits.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PhotosModule } from './photos/photos.module';
     AiIntegrationModule,
     EnrichedPropertyParamsModule,
     PhotosModule,
+    VisitsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

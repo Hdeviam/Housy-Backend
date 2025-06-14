@@ -3,10 +3,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
 } from 'typeorm';
+import { Property } from './property.entity';
 import { User } from './user.entity';
 
 @Entity()
@@ -17,8 +18,14 @@ export class Visit {
   @Column()
   date: Date;
 
-  @Column()
+  @Column({ type: 'text' })
   status: 'scheduled' | 'completed' | 'cancelled';
+
+  @ManyToOne(() => Property, (property) => property.visits)
+  property: Property;
+
+  @Column({ type: 'uuid' })
+  propertyId: string;
 
   @ManyToOne(() => User, (user) => user.visits)
   user: User;
