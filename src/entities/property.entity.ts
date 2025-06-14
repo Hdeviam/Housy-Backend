@@ -42,9 +42,6 @@ export class Property {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  /**
-   * Todos los leads generados por esta propiedad.
-   */
   @OneToMany(() => Lead, (lead) => lead.property)
   leads: Lead[]; // 👈 Aquí es donde falta el campo
 
