@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { LeadsModule } from './leads/leads.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
 import { EnrichedPropertyParamsModule } from './enrichedPropertyParams/enrichedPropertyParams.module';
+import { PhotosModule } from './photos/photos.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EnrichedPropertyParamsModule } from './enrichedPropertyParams/enrichedP
     LeadsModule,
     AiIntegrationModule,
     EnrichedPropertyParamsModule,
+    PhotosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
