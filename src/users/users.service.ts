@@ -1,16 +1,17 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt'; // Importa bcrypt para hashear contraseñas
+import { Injectable, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { Property } from 'src/entities/property.entity';
+import { Visit } from 'src/entities/visit.entity';
 
-@Injectable() // Marca esta clase como inyectable en el sistema de dependencias
+@Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) // Inyecta el repositorio de la entidad User
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   // Devuelve todos los usuarios desde la base de datos
@@ -23,23 +24,11 @@ export class UsersService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  // Crea un nuevo usuario y hashea su contraseña
-  async create(dto: CreateUserDto): Promise<User> {
-    const existingUser = await this.userRepository.findOneBy({ email: dto.email });
-
-    if (existingUser) {
-      throw new ConflictException('Ya existe un usuario con ese correo electrónico.');
-    }
-
-    const user = this.userRepository.create(dto);
-    return await this.userRepository.save(user);
-  }
-
   // Actualiza un usuario, y si viene una nueva contraseña, también la hashea
   async update(id: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`); // Lanza excepción si no existe
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     if (dto.password) {
@@ -52,6 +41,27 @@ export class UsersService {
 
   // Elimina un usuario por ID
   async delete(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+  }
+
+  /**
+   * Devuelve todas las propiedades creadas por un usuario.
+   */
+  async findUserProperties(userId: string): Promise<Property[]> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .relation('properties')
+      .of(userId)
+      .loadMany();
+  }
+
+  /**
+   * Devuelve todas las visitas asociadas a un usuario.
+   */
+  async findUserVisits(userId: string): Promise<Visit[]> {
+    return this.userRepository.createQueryBuilder('user').relation('visits').of(userId).loadMany();
   }
 }

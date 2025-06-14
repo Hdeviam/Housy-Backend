@@ -25,6 +25,8 @@ import {
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
+import { Property } from 'src/entities/property.entity';
+import { Visit } from 'src/entities/visit.entity';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -50,7 +52,7 @@ export class UsersController {
    */
   @Get(':id')
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles('admin', 'client', 'agent')
+  @Roles('admin', 'agent', 'client')
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiParam({
     name: 'id',
@@ -64,19 +66,6 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    const { password, ...safeUser } = user;
-    return safeUser;
-  }
-
-  /**
-   * Crea un nuevo usuario.
-   */
-  @Post()
-  @ApiOperation({ summary: 'Crear nuevo usuario' })
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ status: 201, description: 'Usuario creado', type: User })
-  async create(@Body() dto: CreateUserDto): Promise<Partial<User>> {
-    const user = await this.usersService.create(dto);
     const { password, ...safeUser } = user;
     return safeUser;
   }
@@ -106,8 +95,8 @@ export class UsersController {
    * Elimina un usuario.
    */
   @Delete(':id')
-  //@UseGuards(AuthGuard, RoleGuard)
-  //@Roles()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin')
   @ApiOperation({ summary: 'Eliminar usuario' })
   @ApiParam({
     name: 'id',
@@ -122,5 +111,64 @@ export class UsersController {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     await this.usersService.delete(id);
+  }
+
+  /**
+   * Devuelve todas las propiedades creadas por un usuario.
+   */
+  @Get(':id/properties')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client')
+  @ApiOperation({ summary: 'Obtener propiedades creadas por un usuario' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de propiedades', type: [Property] })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado o sin propiedades' })
+  async getUserProperties(@Param('id') id: string): Promise<Property[]> {
+    return this.usersService.findUserProperties(id);
+  }
+
+  /**
+   * Devuelve la agenda de visitas programadas por o para un usuario.
+   */
+  @Get(':id/schedule')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client')
+  @ApiOperation({ summary: 'Obtener agenda de visitas' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de visitas', type: [Visit] })
+  @ApiResponse({ status: 404, description: 'Usuario no tiene visitas' })
+  async getUserSchedule(@Param('id') id: string): Promise<Visit[]> {
+    return this.usersService.findUserVisits(id);
+  }
+
+  /**
+   * Devuelve detalles completos del perfil de un usuario.
+   */
+  @Get(':id/profile')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent', 'client')
+  @ApiOperation({ summary: 'Obtener perfil de usuario' })
+  @ApiParam({
+    name: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'ID del usuario',
+  })
+  @ApiResponse({ status: 200, description: 'Perfil del usuario', type: User })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  async getUserProfile(@Param('id') id: string): Promise<Partial<User>> {
+    const user = await this.usersService.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    const { password, ...safeUser } = user;
+    return safeUser;
   }
 }
