@@ -1,6 +1,11 @@
+// src/auth/interfaces/jwt-payload.interface.ts
+
 export interface JwtPayload {
-  sub: number;
+  id: string;
   email: string;
   name: string;
-  role: string;
+  role: 'admin' | 'agent' | 'client';
+  sub?: string | number; // opcional si también lo tienes
+  iat?: number;
+  exp?: number;
 }
