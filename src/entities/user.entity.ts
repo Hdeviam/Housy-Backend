@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Lead } from './lead.entity';
+import { Property } from './property.entity';
+import { Visit } from './visit.entity';
 
 @Entity()
 export class User {
@@ -19,7 +22,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ select: false })
+  @Column({ select: false }) // 👈 No se selecciona automáticamente
   password: string;
 
   @Column()
@@ -36,4 +39,16 @@ export class User {
    */
   @OneToMany(() => Lead, (lead) => lead.user)
   leads: Lead[];
+
+  /**
+   * Todas las propiedades creadas por este usuario.
+   */
+  @OneToMany(() => Property, (property) => property.user)
+  properties: Property[];
+
+  /**
+   * Todas las visitas programadas por o para este usuario.
+   */
+  @OneToMany(() => Visit, (visit) => visit.user)
+  visits: Visit[];
 }
