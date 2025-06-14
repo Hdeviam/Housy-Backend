@@ -1,10 +1,21 @@
-import { Controller, Post, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { Controller, Post, Param, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { EnrichPropertyParamsDto } from 'src/dto/enrichPropertyParams.dto';
 import { AiIntegrationService } from './ai-integration.service';
 import { EnrichedPropertyResponseDto } from 'src/dto/enrichedPropertyResponse.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @ApiTags('AI Integration')
+@ApiBearerAuth()
 @Controller('ai-integration')
 export class AiIntegrationController {
   constructor(private readonly aiIntegrationService: AiIntegrationService) {}
@@ -14,7 +25,8 @@ export class AiIntegrationController {
    * Llama al microservicio de IA.
    */
   @Post(':propertyId/enrichPropertyParams')
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles('admin', 'agent') // Solo admin o agentes pueden enriquecer propiedades
   @ApiOperation({ summary: 'Obtener ficha enriquecida de una propiedad' })
   @ApiParam({
     name: 'propertyId',

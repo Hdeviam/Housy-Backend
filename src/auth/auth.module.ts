@@ -11,7 +11,7 @@ import { User } from 'src/entities/user.entity';
     UsersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default-secret',
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '6h' },
     }),
     TypeOrmModule.forFeature([User]), // 👈 Registra la entidad User
   ],

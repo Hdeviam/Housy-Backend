@@ -13,13 +13,22 @@ import {
 import { CreatePropertyDto } from '../dto/create-property.dto';
 import { UpdatePropertyDto } from '../dto/update-property.dto';
 import { Property } from '../entities/property.entity';
-import { ApiOperation, ApiResponse, ApiTags, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiQuery,
+  ApiParam,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { PropertiesService } from './PropertiesService';
 
-@ApiTags('Properties') // Agrupa los endpoints bajo la etiqueta "Properties" en Swagger
+@ApiTags('Properties')
+@ApiBearerAuth()
 @Controller('properties')
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
@@ -29,7 +38,7 @@ export class PropertiesController {
    * @returns Array de objetos `Property`
    */
   @Get()
-  //@UseGuards(AuthGuard, RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('admin', 'agent', 'client')
   @ApiOperation({ summary: 'Obtener todas las propiedades' })
   @ApiResponse({ status: 200, description: 'Lista de propiedades', type: [Property] })
