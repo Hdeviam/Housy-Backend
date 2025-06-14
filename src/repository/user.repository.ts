@@ -27,29 +27,6 @@ export class UserRepository {
   }
 
   /**
-   * Crea un nuevo usuario a partir de los datos proporcionados.
-   * Asigna un ID temporal aleatorio y registra fechas de creación y actualización.
-   * @param data - Datos iniciales del usuario
-   * @returns El usuario creado
-   */
-  createUser(data: Partial<User>): User {
-    const newUser: User = {
-      id: this.generateUuid(), // 👈 Generamos un UUID válido
-      email: '',
-      name: '',
-      password: '',
-      role: 'client',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      leads: [], // Inicializar leads como un array vacío
-      ...data,
-    };
-
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  /**
    * Actualiza un usuario existente con nuevos datos.
    * @param id - Identificador único del usuario (formato string)
    * @param data - Nuevos datos parciales del usuario
