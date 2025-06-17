@@ -8,9 +8,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Lead } from './lead.entity';
-import { EnrichedPropertyParams } from './enrichedPropertyParams.entity';
-import { User } from './user.entity';
+import { Lead } from '../../leads/entity/lead.entity';
+import { EnrichedPropertyParams } from '../../ai-integration/entity/enrichedPropertyParams.entity';
+import { User } from '../../users/entity/user.entity';
 
 @Entity()
 export class Property {

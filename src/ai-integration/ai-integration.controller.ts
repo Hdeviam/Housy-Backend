@@ -7,9 +7,9 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { EnrichPropertyParamsDto } from 'src/dto/enrichPropertyParams.dto';
+import { EnrichPropertyParamsDto } from 'src/ai-integration/dto/enrichPropertyParams.dto';
 import { AiIntegrationService } from './ai-integration.service';
-import { EnrichedPropertyResponseDto } from 'src/dto/enrichedPropertyResponse.dto';
+import { EnrichedPropertyResponseDto } from 'src/ai-integration/dto/enrichedPropertyResponse.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';

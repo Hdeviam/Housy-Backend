@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
+import { User } from './entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { Property } from 'src/entities/property.entity';
-import { Visit } from 'src/entities/visit.entity';
+import { Property } from 'src/properties/entity/property.entity';
+import { Visit } from 'src/visits/entity/visit.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Property, Visit]), JwtModule],

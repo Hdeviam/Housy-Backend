@@ -10,9 +10,9 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { CreatePropertyDto } from '../dto/create-property.dto';
-import { UpdatePropertyDto } from '../dto/update-property.dto';
-import { Property } from '../entities/property.entity';
+import { CreatePropertyDto } from './dto/create-property.dto';
+import { UpdatePropertyDto } from './dto/update-property.dto';
+import { Property } from './entity/property.entity';
 import {
   ApiOperation,
   ApiResponse,

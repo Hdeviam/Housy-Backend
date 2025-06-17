@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { User } from '../entities/user.entity';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { Property } from 'src/entities/property.entity';
-import { Visit } from 'src/entities/visit.entity';
+import { User } from './entity/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Property } from 'src/properties/entity/property.entity';
+import { Visit } from 'src/visits/entity/visit.entity';
 
 @Injectable()
 export class UsersService {

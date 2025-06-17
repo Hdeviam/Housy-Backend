@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Property } from './property.entity';
+import { Property } from '../../properties/entity/property.entity';
 import { SectionType } from '../dto/upload-photo.dto'; // Usamos el mismo enum
 
 @Entity()

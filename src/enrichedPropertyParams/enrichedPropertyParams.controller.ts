@@ -2,8 +2,8 @@ import { Controller, Post, Body, UseGuards, Param, Get } from '@nestjs/common';
 import { EnrichedPropertyParamsService } from './enrichedPropertyParams.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
-import { EnrichPropertyParamsDto } from 'src/dto/enrichPropertyParams.dto';
-import { EnrichedPropertyParamsResponseDto } from 'src/dto/enrichedPropertyParamsResponse.dto';
+import { EnrichPropertyParamsDto } from 'src/ai-integration/dto/enrichPropertyParams.dto';
+import { EnrichedPropertyParamsResponseDto } from 'src/ai-integration/dto/enrichedPropertyParamsResponse.dto';
 
 @ApiTags('EnrichedPropertyParams')
 @Controller('enrichedPropertyParams')
