@@ -37,6 +37,15 @@ export class UpdatePropertyDto {
   @IsString()
   location?: string;
 
+  @ApiProperty({ example: 41.3851, required: false, description: 'Latitud de la propiedad' })
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @ApiProperty({ example: 2.1734, required: false, description: 'Longitud de la propiedad' })
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
   /**
    * URLs de las fotos de la propiedad (opcional).
    * Pueden ser URLs de imágenes ya cargadas en un servicio como AWS S3.
