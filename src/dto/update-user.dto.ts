@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsEnum } from 'class-validator';
+import { IsEmail, IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum UserRole {
@@ -30,4 +30,9 @@ export class UpdateUserDto {
   })
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @ApiProperty({ example: '+34 600 123 456', required: false })
+  @IsOptional()
+  @IsString()
+  phone?: string;
 }
