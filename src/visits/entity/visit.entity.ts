@@ -7,8 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Property } from './property.entity';
-import { User } from './user.entity';
+import { Property } from '../../properties/entity/property.entity';
+import { User } from '../../users/entity/user.entity';
 
 @Entity()
 export class Visit {

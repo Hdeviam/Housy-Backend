@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EnrichedPropertyParams } from 'src/entities/enrichedPropertyParams.entity';
-import { EnrichPropertyParamsDto } from 'src/dto/enrichPropertyParams.dto';
-import { EnrichedPropertyParamsResponseDto } from 'src/dto/enrichedPropertyParamsResponse.dto';
+import { EnrichedPropertyParams } from 'src/ai-integration/entity/enrichedPropertyParams.entity';
+import { EnrichPropertyParamsDto } from 'src/ai-integration/dto/enrichPropertyParams.dto';
+import { EnrichedPropertyParamsResponseDto } from 'src/ai-integration/dto/enrichedPropertyParamsResponse.dto';
 import { NotFoundException } from '@nestjs/common';
 
 @Injectable()

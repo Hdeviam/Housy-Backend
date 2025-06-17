@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LeadsService } from './leads.service';
-import { CreateLeadDto } from '../dto/create-lead.dto';
-import { Lead } from '../entities/lead.entity';
+import { CreateLeadDto } from './dto/create-lead.dto';
+import { Lead } from './entity/lead.entity';
 import {
   ApiTags,
   ApiOperation,

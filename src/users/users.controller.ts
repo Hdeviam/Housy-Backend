@@ -11,8 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { User } from '../entities/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entity/user.entity';
 import {
   ApiTags,
   ApiOperation,
@@ -24,8 +24,8 @@ import {
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
-import { Property } from 'src/entities/property.entity';
-import { Visit } from 'src/entities/visit.entity';
+import { Property } from 'src/properties/entity/property.entity';
+import { Visit } from 'src/visits/entity/visit.entity';
 
 @ApiTags('Users')
 @ApiBearerAuth()

@@ -1,4 +1,4 @@
-import { User } from '../entities/user.entity';
+import { User } from '../entity/user.entity';
 
 /**
  * Clase temporal que simula una capa de acceso a datos para entidades de tipo User.

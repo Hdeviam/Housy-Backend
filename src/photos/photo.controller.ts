@@ -13,8 +13,8 @@ import { PhotosService } from './photos.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
-import { UploadPhotoDto } from '../dto/upload-photo.dto';
-import { Photo } from '../entities/photo.entity';
+import { UploadPhotoDto } from './dto/upload-photo.dto';
+import { Photo } from './entity/photo.entity';
 
 // 👇 Interfaz temporal para evitar problemas con Express.Multer.File
 interface MulterFile {

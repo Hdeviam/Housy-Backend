@@ -1,4 +1,4 @@
-import { Property } from '../entities/property.entity';
+import { Property } from '../entity/property.entity';
 
 /**
  * Clase que simula una capa de acceso a datos para entidades de tipo Property.

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Lead } from 'src/entities/lead.entity';
+import { Lead } from 'src/leads/entity/lead.entity';
 
 /**
  * Clase temporal que simula una capa de acceso a datos para entidades de tipo Lead.
