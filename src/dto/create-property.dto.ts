@@ -43,4 +43,8 @@ export class CreatePropertyDto {
   @IsArray()
   @IsUrl({}, { each: true }) // Cada URL debe ser válida
   photos?: string[];
+
+  @ApiProperty({ example: 'df6b1a08-6f1e-4112-8ad8-e752ce1a90e6' })
+  @IsString()
+  userId: string;
 }
