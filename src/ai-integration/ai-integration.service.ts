@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { EnrichedPropertyResponseDto } from 'src/dto/enrichedPropertyResponse.dto';
-import { EnrichPropertyParamsDto } from 'src/dto/enrichPropertyParams.dto';
+import { EnrichedPropertyResponseDto } from 'src/ai-integration/dto/enrichedPropertyResponse.dto';
+import { EnrichPropertyParamsDto } from 'src/ai-integration/dto/enrichPropertyParams.dto';
 
 @Injectable()
 export class AiIntegrationService {

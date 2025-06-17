@@ -7,10 +7,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from '../dto/register.dto';
-import { LoginDto } from '../dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { User } from 'src/entities/user.entity';
+import { User } from 'src/users/entity/user.entity';
 
 @ApiTags('Auth')
 @Controller('auth')

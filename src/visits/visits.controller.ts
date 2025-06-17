@@ -3,7 +3,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { Visit } from '../entities/visit.entity';
+import { Visit } from './entity/visit.entity';
 import { VisitsService } from './visits.service';
 
 @ApiTags('Visits')

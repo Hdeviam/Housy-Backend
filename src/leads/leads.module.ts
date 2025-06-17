@@ -4,13 +4,13 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { PropertiesModule } from 'src/properties/properties.module';
 
-import { Lead } from 'src/entities/lead.entity';
-import { User } from 'src/entities/user.entity';
-import { Property } from 'src/entities/property.entity';
+import { Lead } from 'src/leads/entity/lead.entity';
+import { User } from 'src/users/entity/user.entity';
+import { Property } from 'src/properties/entity/property.entity';
 
 import { LeadsService } from './leads.service';
-import { LeadRepository } from 'src/repository/lead.repository';
 import { LeadsController } from './leads.controller';
+import { LeadRepository } from './repository/lead.repository';
 
 @Module({
   imports: [

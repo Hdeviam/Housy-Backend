@@ -6,9 +6,9 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Lead } from './lead.entity';
-import { Property } from './property.entity';
-import { Visit } from './visit.entity';
+import { Lead } from '../../leads/entity/lead.entity';
+import { Property } from '../../properties/entity/property.entity';
+import { Visit } from '../../visits/entity/visit.entity';
 
 @Entity()
 export class User {

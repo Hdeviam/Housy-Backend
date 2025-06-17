@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Photo } from '../entities/photo.entity';
-import { UploadPhotoDto } from '../dto/upload-photo.dto';
+import { Photo } from './entity/photo.entity';
+import { UploadPhotoDto } from './dto/upload-photo.dto';
 
 @Injectable()
 export class PhotosService {

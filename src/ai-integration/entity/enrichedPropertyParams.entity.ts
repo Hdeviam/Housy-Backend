@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Property } from './property.entity';
+import { Property } from '../../properties/entity/property.entity';
 
 @Entity()
 export class EnrichedPropertyParams {

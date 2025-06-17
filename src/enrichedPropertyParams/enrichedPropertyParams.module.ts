@@ -4,7 +4,7 @@ import { EnrichedPropertyParamsController } from './enrichedPropertyParams.contr
 import { EnrichedPropertyParamsService } from './enrichedPropertyParams.service';
 import { PropertiesModule } from 'src/properties/properties.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EnrichedPropertyParams } from 'src/entities/enrichedPropertyParams.entity';
+import { EnrichedPropertyParams } from 'src/ai-integration/entity/enrichedPropertyParams.entity';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
