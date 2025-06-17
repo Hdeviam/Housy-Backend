@@ -48,6 +48,12 @@ export class Property {
   @OneToMany(() => Lead, (lead) => lead.property)
   leads: Lead[];
 
+  @Column({ type: 'double precision', nullable: true })
+  latitude?: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  longitude?: number;
+
   @OneToMany(() => EnrichedPropertyParams, (params) => params.property)
   enrichedPropertyParams: EnrichedPropertyParams[];
 
