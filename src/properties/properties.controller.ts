@@ -121,7 +121,7 @@ export class PropertiesController {
    */
   @Delete(':id')
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles('admin') // 👈 Solo admins pueden eliminar propiedades
+  @Roles('admin', 'agent') // 👈 Solo admins pueden eliminar propiedades
   @ApiOperation({ summary: 'Eliminar propiedad' })
   @ApiParam({
     name: 'id',

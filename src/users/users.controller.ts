@@ -74,7 +74,7 @@ export class UsersController {
    */
   @Put(':id')
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles('admin', 'client')
+  @Roles('admin', 'agent', 'client')
   @ApiOperation({ summary: 'Actualizar usuario' })
   @ApiParam({
     name: 'id',
