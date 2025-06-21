@@ -31,6 +31,11 @@ export class CreatePropertyDto {
   @IsString()
   location: string;
 
+  @ApiProperty({ example: 'Venta - arriendo', required: false })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
   /**
    * URLs de las fotos de la propiedad (opcional).
    * Pueden ser URLs de imágenes ya cargadas en un servicio como AWS S3.
