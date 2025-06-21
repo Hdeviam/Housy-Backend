@@ -54,6 +54,9 @@ export class Property {
   @Column({ type: 'double precision', nullable: true })
   longitude?: number;
 
+  @Column({ nullable: true })
+  status?: string;
+
   @OneToMany(() => EnrichedPropertyParams, (params) => params.property)
   enrichedPropertyParams: EnrichedPropertyParams[];
 
