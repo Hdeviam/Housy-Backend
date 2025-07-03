@@ -17,6 +17,9 @@ export class Photo {
   @Column()
   url: string;
 
+  @Column({ nullable: true }) // publicId puede no existir para todos los proveedores o casos
+  publicId: string | null;
+
   @Column({
     type: 'enum',
     enum: SectionType,

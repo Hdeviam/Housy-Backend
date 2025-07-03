@@ -6,28 +6,25 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PhotosService } from './photos.service';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { RoleGuard } from 'src/guards/role.guard';
-import { Roles } from 'src/decorators/roles.decorator';
+// Necesitaremos Express para el tipo Multer.File si no está globalmente disponible
+// import { Express } from 'express';
+import { AuthGuard } from '../guards/auth.guard'; // Ajustada la ruta
+import { RoleGuard } from '../guards/role.guard'; // Ajustada la ruta
+import { Roles } from '../decorators/roles.decorator'; // Ajustada la ruta
 import { UploadPhotoDto } from './dto/upload-photo.dto';
 import { Photo } from './entity/photo.entity';
 
-// 👇 Interfaz temporal para evitar problemas con Express.Multer.File
-interface MulterFile {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  size: number;
-  destination: string;
-  filename: string;
-  path: string;
-  buffer?: Buffer;
-}
+// Usar directamente Express.Multer.File si los tipos están instalados y reconocidos.
+// Si hay problemas, asegúrate de que @types/multer esté en devDependencies.
+// npm install --save-dev @types/multer
 
 @ApiTags('Photos')
 @Controller('photos')
@@ -62,13 +59,30 @@ export class PhotoController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadPhoto(
     @Param('propertyId') propertyId: string,
-    @UploadedFile() file: MulterFile, // 👈 Usamos la interfaz local
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5MB
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg|webp|gif)' }),
+        ],
+        exceptionFactory: (error) => {
+          throw new BadRequestException(`Validation failed: ${error}`);
+        }
+      }),
+    )
+    file: Express.Multer.File, // Usar el tipo de Express
     @Body() dto: UploadPhotoDto,
   ): Promise<Photo> {
-    const photo = this.photosService.uploadPhoto(propertyId, {
-      section: dto.section,
-    });
-
-    return photo;
+    if (!file || !file.buffer) {
+      throw new BadRequestException('File buffer is missing.');
+    }
+    // Pasar el buffer del archivo, nombre original y mimetype al servicio
+    return this.photosService.uploadPhoto(
+      propertyId,
+      dto, // contiene la 'section'
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+    );
   }
 }

@@ -83,9 +83,47 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
+## Configuración Adicional
+
+### Gestión de Fotos con Cloudinary
+
+Este proyecto utiliza Cloudinary para la gestión y almacenamiento de fotos. Para que la funcionalidad de carga de fotos opere correctamente, es necesario configurar las siguientes variables de entorno:
+
+-   `CLOUDINARY_CLOUD_NAME`: El nombre de tu nube de Cloudinary.
+-   `CLOUDINARY_API_KEY`: Tu clave API de Cloudinary.
+-   `CLOUDINARY_API_SECRET`: Tu secreto API de Cloudinary.
+
+Estas variables se pueden definir en un archivo `.env` en la raíz del proyecto, que será cargado por el `ConfigModule` de NestJS. Ejemplo de contenido del archivo `.env`:
+
+```
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+
+# Otras variables de entorno como las de la base de datos
+DB_HOST=localhost
+DB_PORT=5432
+# ...etc.
+```
+
+**Endpoints de Fotos:**
+
+-   `POST /photos/{propertyId}/upload`: Sube una foto para una propiedad específica. Requiere autenticación y rol de 'admin' o 'agent'. El cuerpo de la solicitud debe ser `multipart/form-data` e incluir:
+    -   `file`: El archivo de imagen.
+    -   `section`: (string) La sección a la que pertenece la foto (ej: `kitchen`, `bathroom`, `livingRoom`, `bedroom`, `exterior`).
+-   `DELETE /photos/{photoId}`: Elimina una foto específica. Requiere autenticación y rol apropiado (no especificado en el código actual, pero se asume similar a la subida).
+
+**Futura Integración con AWS S3:**
+
+El sistema está diseñado con una capa de abstracción que permitirá integrar AWS S3 como proveedor de almacenamiento en el futuro. Actualmente, la implementación de S3 es un placeholder. Para cambiar a S3 (una vez implementado), se requerirá modificar la configuración del módulo de fotos para usar `S3StorageModule` en lugar de `CloudinaryStorageModule` y configurar las variables de entorno correspondientes para S3.
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Resources
+
+Check out a few resources that may come in handy when working with NestJS:
 
 ## Stay in touch
 
